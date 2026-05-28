@@ -46,31 +46,31 @@ export default function Hero() {
   const frameIndex = useTransform(scrollYProgress, [0, 1], [1, FRAME_COUNT]);
 
   // Preload all 180 images for smooth playback
+  // Preload all 180 images in the background
   useEffect(() => {
     let isMounted = true;
-    const loadImages = async () => {
-      const promises = [];
-      for (let i = 1; i <= FRAME_COUNT; i++) {
-        promises.push(
-          new Promise<HTMLImageElement>((resolve) => {
-            const img = new Image();
-            img.src = currentFrame(i);
-            img.onload = () => resolve(img);
-            img.onerror = () => resolve(img); // Continue even if one fails
-          })
-        );
-      }
-      
-      // Load all images in parallel
-      const loadedImages = await Promise.all(promises);
-      
-      if (isMounted) {
-        setImages(loadedImages);
-        setLoaded(true);
-      }
-    };
-    loadImages();
+    const imgs: HTMLImageElement[] = [];
     
+    // Create image objects and trigger network requests
+    for (let i = 1; i <= FRAME_COUNT; i++) {
+      const img = new Image();
+      img.src = currentFrame(i);
+      imgs.push(img);
+    }
+    
+    // Immediately store the image objects so renderFrame can use them when ready
+    setImages(imgs);
+
+    // Only wait for the VERY FIRST frame to load before hiding the loading screen
+    if (imgs[0]) {
+      if (imgs[0].complete) {
+        setLoaded(true);
+      } else {
+        imgs[0].onload = () => { if (isMounted) setLoaded(true); };
+        imgs[0].onerror = () => { if (isMounted) setLoaded(true); };
+      }
+    }
+
     return () => { isMounted = false; };
   }, []);
 
@@ -82,7 +82,7 @@ export default function Hero() {
     if (!context) return;
     
     const img = images[index - 1]; // Array is 0-indexed
-    if (!img) return;
+    if (!img || !img.complete || img.naturalWidth === 0) return;
 
     // Make canvas match its container's size
     if (canvas.parentElement) {
