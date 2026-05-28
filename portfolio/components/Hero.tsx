@@ -49,17 +49,21 @@ export default function Hero() {
   useEffect(() => {
     let isMounted = true;
     const loadImages = async () => {
-      const loadedImages: HTMLImageElement[] = [];
+      const promises = [];
       for (let i = 1; i <= FRAME_COUNT; i++) {
-        const img = new Image();
-        img.src = currentFrame(i);
-        // We wait for each to load. This might take a second or two.
-        await new Promise((resolve) => {
-          img.onload = resolve;
-          img.onerror = resolve; // Continue even if one fails
-        });
-        loadedImages.push(img);
+        promises.push(
+          new Promise<HTMLImageElement>((resolve) => {
+            const img = new Image();
+            img.src = currentFrame(i);
+            img.onload = () => resolve(img);
+            img.onerror = () => resolve(img); // Continue even if one fails
+          })
+        );
       }
+      
+      // Load all images in parallel
+      const loadedImages = await Promise.all(promises);
+      
       if (isMounted) {
         setImages(loadedImages);
         setLoaded(true);
