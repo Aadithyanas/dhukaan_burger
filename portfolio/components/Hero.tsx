@@ -218,7 +218,7 @@ export default function Hero() {
 
             {/* Animated DHUKAAN BURGERS Text in the Center */}
             <div className="absolute left-1/2 top-[50%] md:top-[55%] -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none flex whitespace-nowrap z-30">
-               <h3 className="font-heading text-6xl md:text-8xl lg:text-[8rem] uppercase tracking-normal drop-shadow-xl">
+               <h3 className="font-heading text-[7.5vw] sm:text-4xl md:text-8xl lg:text-[8rem] uppercase tracking-normal drop-shadow-xl">
                  {"DHUKAAN BURGERS".split("").map((letter, i, arr) => (
                    <AnimatedLetter key={i} letter={letter} index={i} progress={scrollYProgress} total={arr.length} />
                  ))}
@@ -228,7 +228,7 @@ export default function Hero() {
             {/* Huge Top Text After Scroll */}
             <motion.div 
               style={{ opacity: opacity5, scale: useTransform(scrollYProgress, [0.8, 1], [0.9, 1], { clamp: true }) }} 
-              className="absolute top-[5%] md:top-[10%] left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none z-20 w-full text-center"
+              className="absolute top-[15%] md:top-[10%] left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none z-20 w-full text-center"
             >
               <h4 className="text-accent text-4xl md:text-6xl font-serif italic mb-[-15px] md:mb-[-30px] z-10 drop-shadow-lg opacity-90">
                 Dhukaan's
